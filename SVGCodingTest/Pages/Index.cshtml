@@ -86,7 +86,7 @@
                 arrVal = Object.entries(vehicles[i]).map(item => item[1]);
                 name = arrVal[0];
                 arrVal.clear;
-                markerXPosition = MarginSpace + chartMargin + (i * (chartWidth + chartMargin)) * (chartWidth / 2);
+                markerXPosition = MarginSpace + chartMargin + (i * (chartWidth + chartMargin)) * (chartWidth / 65);
                 markerYPosition = MarginHeight + 20;
                 textelement = document.createElementNS("http://www.w3.org/2000/svg", 'text');
                 textelement.setAttribute('dx', markerXPosition);
@@ -126,6 +126,7 @@
                 bVal = parseInt(arrChartVal[1]);
                 bHt = (bVal * svgHeight / maxValue);
                 bX = MarginSpace + (i * (chartWidth + chartMargin)) + chartMargin + 10;
+                console.log(bX);
                 bY = (MarginHeight - bHt - 2);
                 drawRectangle(bX, bY, chartWidth, bHt, true);
 

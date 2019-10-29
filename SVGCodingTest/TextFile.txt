@@ -1,0 +1,7 @@
+﻿I started this test project with ASP.net Razor Pages. It seemed like the best 
+way to get an MVC-like environment without creeping into overkill. I then
+decided to pass an object from c# in JSON to inline JS in the Razor Page. 
+Other than C# and JS, most of the ASP.NET framework is new to me, so I had to 
+teach myself as I attempted to complete the test. I had some trouble with the 
+SVG rendering properly dynamically through the JS. I also used the third party 
+frameworks LINQ, and Newtonsoft.JSON. 
