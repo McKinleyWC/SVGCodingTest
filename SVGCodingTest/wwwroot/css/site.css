@@ -28,6 +28,16 @@ body {
     margin: 15px;
 }
 
+/* barchart container*/
+#chartcontainer {
+    height: 550px; 
+    width: 600px; 
+    border: double; 
+    background-color: aliceblue; 
+    position: fixed; 
+    top: 100px; 
+    left: 500px;
+}
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
     /* Hide captions */

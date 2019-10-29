@@ -1,38 +1,173 @@
 ﻿@page
-@model IndexModel
+@model SVGCodingTest.Pages.IndexModel
 @{
-    ViewData["Title"] = "Home page";
 }
 
-<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
-    <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
-    </ol>
-    <div class="carousel-inner" role="listbox">
-        <div class="item active">
-            <img src="" alt="" class="" />
-            <div class="carousel-caption" role="option">
-                <p>
-                    
-                </p>
-            </div>
-        </div>
-        <div class="item">
-            <img src="" alt="" class="" />
-            <div class="carousel-caption" role="option">
-                <p>
-                    
-                </p>
-            </div>
-        </div>
-    </div>
-    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-    </a>
-    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-    </a>
+
+<h2>SVG Quantity Change</h2>
+<head>
+    
+</head>
+<div>
+    <script type="text/javascript">
+        var vehicles = @Html.Raw(Model.vehicleJSON);
+        var svg;
+        var svgWidth, svgHeight, svgMargin, svgSpace;
+        var MarginSpace, MarginHeight;
+        var chartWidth, chartMargin, totalBars, maxValue;
+        var LabelYAxis;
+
+        function ChartSetings()
+        {
+            svgMargin = 20;
+            svgSpace = 60;
+
+            svgHeight = svg.height.baseVal.value - 2 * svgMargin - svgSpace;
+            svgWidth = svg.width.baseVal.value - 2 * svgMargin - svgSpace;
+
+            MarginSpace = svgMargin + svgSpace;
+            MarginHeight = svgMargin + svgHeight;
+
+            chartMargin = 15;
+            totalBars = vehicles.length;
+            chartWidth = (svgWidth / totalBars) - chartMargin;
+
+            maxValue = 0;
+            for (var i = 0; i < totalBars; i++)
+            {
+                var arrVal = Object.entries(vehicles[i]).map(item => item[1]);
+                var barVal;
+                var barVal1 = parseInt(arrVal[1]);
+                var barVal2 = parseInt(arrVal[2]);
+                if (barVal1 > barVal2)
+                    barVal = barVal1;
+                else
+                    barVal = barVal2;
+                if (parseInt(barVal) > parseInt(maxValue))
+                    maxValue = barVal;
+                arrVal.clear;
+            }
+
+            LabelYAxis = 10;
+        }
+
+        function drawXY(x1, y1, x2, y2)
+        {
+            var newAxis = document.createElementNS("http://www.w3.org/2000/svg", 'line');
+            newAxis.setAttribute("x1", x1);
+            newAxis.setAttribute("y1", y1);
+            newAxis.setAttribute("x2", x2);
+            newAxis.setAttribute("y2", y2);
+            newAxis.style.stroke = "black";
+            newAxis.style.strokeWidth = "2px";
+            svg.appendChild(newAxis);
+        }
+
+        function drawMarkers()
+        {
+            var numMarkers = parseInt(maxValue / LabelYAxis);
+            //y axis
+            for (var i = 0; i < LabelYAxis +1; i++)
+            {
+                markerVal = i * numMarkers;
+                markerValHt = i * numMarkers * svgHeight;
+                var xMarkers = MarginSpace - 5;
+                var yMarkers = MarginHeight - (markerValHt / maxValue);
+                textelement = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+                textelement.setAttribute('dx', xMarkers - 40);
+                textelement.setAttribute('dy', yMarkers);
+                txtnode = document.createTextNode(markerVal);
+                textelement.appendChild(txtnode);
+                svg.appendChild(textelement);
+            }
+            //x axis
+            for (var i = 0; i < totalBars; i++)
+            {
+                arrVal = Object.entries(vehicles[i]).map(item => item[1]);
+                name = arrVal[0];
+                arrVal.clear;
+                markerXPosition = MarginSpace + chartMargin + (i * (chartWidth + chartMargin)) * (chartWidth / 2);
+                markerYPosition = MarginHeight + 20;
+                textelement = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+                textelement.setAttribute('dx', markerXPosition);
+                textelement.setAttribute('dy', markerYPosition);
+                txtnode = document.createTextNode(name);
+                textelement.appendChild(txtnode);
+                svg.appendChild(textelement);
+            }
+        }
+
+        function drawAxis()
+        {
+            //y axis
+            drawXY(MarginSpace, MarginHeight, MarginSpace, svgMargin);
+            //x axis
+            drawXY(MarginSpace, MarginHeight, MarginSpace + chartWidth + 500, MarginHeight);
+            drawMarkers();
+        }
+
+        function drawRectangle(x, y, wd, ht, fill)
+        {
+            var rect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+            rect.setAttribute(null, 'x', x);
+            rect.setAttribute(null, 'y', y);
+            rect.setAttribute(null, 'width', wd);
+            rect.setAttribute(null, 'height', ht);
+            rect.setAttribute(null, 'fill', "blue");
+            svg.appendChild(rect);
+        }
+
+        function drawChart()
+        {
+            for (var i = 0; i < totalBars; i++)
+            {
+                var arrChartVal = Object.entries(vehicles[i]).map(item => item[1]);
+                //both years
+                bVal = parseInt(arrChartVal[1]);
+                bHt = (bVal * svgHeight / maxValue);
+                bX = MarginSpace + (i * (chartWidth + chartMargin)) + chartMargin + 10;
+                bY = (MarginHeight - bHt - 2);
+                drawRectangle(bX, bY, chartWidth, bHt, true);
+
+                //bVal2 = parseInt(arrChartVal[2]);
+                //bHt2 = (bVal2 * svgHeight / maxValue);
+                //bX2 = (i * (chartWidth + chartMargin)) + chartMargin + 10;
+                //bY2 = (MarginHeight - bHt2 - 2);
+                //drawRectangle(bX2, bY2, chartWidth, bHt2, true);
+            }
+        }
+
+        function clear()
+        {
+            while (svg.lastChild)
+            {
+                svg.removeChild(svg.lastChild);
+            }
+        }
+
+        function drawBarChart()
+        {
+            svg = document.getElementsByTagName('svg')[0];
+
+            var barchart = document.getElementById('barchart');
+            barchart.addEventListener('click', function ()
+            {
+                clear();
+                ChartSetings();
+                drawAxis();
+                drawChart();
+            }, false);
+        }
+        window.onload = drawBarChart;
+    </script>
 </div>
+<body>
+    <div id="chartcontainer">
+        <svg id="svgcontainer" height="600" width="550">
+        </svg>
+    </div>
+    <div id="charttype">
+        <br />
+        <input type="radio" id="barchart" name="Chart" />
+    </div>
+</body>
